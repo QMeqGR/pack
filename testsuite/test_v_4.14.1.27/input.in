@@ -1,0 +1,82 @@
+cella  = 10  ! cell parms
+cellb  = 10
+cellc  = 10
+alph   = 90 ! alpha
+beta   = 90
+gamm   = 90
+
+
+n_type_an = 2
+
+num_an_1 = 2
+num_vert_1 = 1
+an_chrg_c_1 =  -1.3
+an_chrg_v_1 =  0.3
+cvd_1 = 1.0
+Rcent_1 = 1.4
+Rvert_1 = 1.1
+Zcent_1 = 8
+Zvert_1 = 1
+num_an_2 = 2
+num_vert_2 = 2
+an_chrg_c_2 = -2
+an_chrg_v_2 =  0
+cvd_2 = 0.0
+Rcent_2 = 1.4
+Rvert_2 = 1.1
+Zcent_2 = 8
+swp_anion_chng = 1
+
+n_type_ca = 1
+
+num_ca_1 = 2
+ca_chrg_1= 3
+Rcat_1= 0.46
+Zcat_1= 13
+num_ca_2 = 0
+ca_chrg_2= 3
+Rcat_2= 0.46
+Zcat_2= 13
+
+def_rer  1 8 1.6
+
+#sqsh_vol_pct = 0.8    ! min orth val (prevents cell squashing)
+#restart = 0         ! (default 0) 1 = do a restart calculation
+
+basin_hop_scale_factor_hi = 1.01
+non_per_ewald = 0
+forces = 0
+best_compare_off = 1
+
+efunc = 0
+##rep_epsilon = 0.1
+use_wlmc = 1
+wl_runs = 50
+wl_t_runs = 102
+
+wl_weighted_dos = 0
+wl_emin_mult = 10
+#wl_emax_mult = 10
+#wl_nEbins = 1000
+wl_bin_width = 0.5
+wl_en_max = 10
+wl_fmin_conv = 1e-1
+wl_lnfmod_init = 1
+wl_lnfmod_style = 0
+wl_hst_rpt_pct = 0.99
+wl_hst_flat_method = 0
+wl_hst_flat_window = 0.8
+wl_hst_flat_pct = 0.95
+wl_qual_fact = 0.99
+wl_iter_print = 400
+trans_frac = 0.03
+wl_simp_nmax = 0
+wl_simp_ediff_init = 1e-1
+wl_short_init = 0
+wl_prt_dos = 1
+wl_prt_hst = 0
+
+#simp_nmax = 5000
+#simp_restarts = 5
+#simp_lamb = 0.05
+debug= -2  ! -2

@@ -1,0 +1,90 @@
+#!/bin/sh
+#
+#
+if [ "" == "$1" ]; then
+    echo
+    echo "OPTIONS:"
+    echo "---------"
+    echo "f   --- finds and prints names of all machines running pack"
+    echo "g   --- returns a node number that is open and writes to machines file"
+    echo "r N --- renices all pack runs to N"
+    echo "k   --- kills all pack runs (careful!!)"
+    echo "h   --- sends all pack runs -HUP signal (careful!!)"
+    echo
+fi
+
+
+if [ "f" == "$1" ]; then
+    echo "Finding machines running pack:"
+    echo "Node   PID   NI"
+    for node in `cat /etc/computenodes`; do
+	outstring=`rsh $node ps -o "%c%p%n" | grep pack`
+	if [ -n "$outstring" ]; then
+	PID=`echo $outstring | awk '(NF>0){print $2}'`
+	NICE=`echo $outstring | awk '(NF>0){print $3}'`
+	echo $node "  " $PID "    " $NICE
+	fi
+    done
+fi
+
+# have to put $1 in quotes.  this is crazy stupid, but how bash works.
+# what if you really want the first argument to match $1 !!!
+
+if [ "k" == "$1" ]; then
+    echo "Killing pack runs"
+    for node in `cat /etc/computenodes`; do
+	outstring=`rsh $node ps -C pack | grep pack`
+	if [ -n "$outstring" ]; then  
+	echo "killing pack on " $node
+	rsh $node killall -INT pack
+	fi
+    done
+fi
+
+if [ "h" == "$1" ]; then
+    echo "Killing pack runs"
+    for node in `cat /etc/computenodes`; do
+	outstring=`rsh $node ps -C pack | grep pack`
+	if [ -n "$outstring" ]; then  
+	echo "killing pack on " $node
+	rsh $node killall -HUP pack
+	fi
+    done
+fi
+
+if [ "r" == "$1" ]; then
+    RENICE=$2
+    echo "re-nicing pack runs with -n " $RENICE
+    for node in `cat /etc/computenodes`; do
+	outstring=`rsh $node ps -C pack | grep pack`
+	PID=`echo $outstring | awk '(NF>1){print $1}'`
+	if [ -n "$outstring" ]; then  
+	echo "renicing pack on " $node " with PID= " $PID
+	# this is BSD renice not POSIX, for master
+	rsh $node renice $RENICE -p $PID 
+	fi
+    done
+fi
+
+if [ "g" == "$1" ]; then
+    for node in `cat /etc/computenodes`; do
+	outstring=`rsh $node ps -C pack | grep pack`
+	reachable=`rsh  $node ps`
+	# echo "reachable= "$reachable
+	if [ -z "$reachable" ]; then
+	    echo "node "$node " is unreachable, will search next node"
+	    continue;
+	fi
+
+	if [ -z "$outstring" ]; then  
+	# echo $node " is first node open"
+	echo $node > machines
+	exit
+	fi
+    done
+fi
+
+
+
+exit
+

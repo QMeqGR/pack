@@ -1,0 +1,43 @@
+#!/bin/awk -f
+
+BEGIN{
+
+  # input on command line
+
+  # el=1.83;
+  # fr=0.935;
+  # see notebook series: E/T, book 4, page 119
+
+  CONVFMT="%.15g";
+  PI =  4.0*atan2(1.0,1.0);
+  D2R = PI/180.0;
+  R2D = 180.0/PI;
+  
+  theta_deg=45;
+  theta_rad=45*(D2R);
+
+  # x-y plane rotation matrix
+  R11= cos(theta_rad);
+  R12= sin(theta_rad);
+  R21= -sin(theta_rad);
+  R22= cos(theta_rad);
+
+  # declare the atom positions
+  at[3*NUMAT];
+  
+  at[0+0]=  1; at[0+1]=  0; at[0+2]=  0;
+  at[1+0]= -1; at[1+1]=  0; at[1+2]=  0;
+  at[2+0]=  0; at[2+1]=  1; at[2+2]=  0;
+  at[3+0]=  0; at[3+1]= -1; at[3+2]=  0;
+
+  # rotate the square in the plane
+  for(i=4;i<9;i++){
+    at[i+0]=R11*at[i-4+0]+R12*at[i-4+1];
+    at[i+1]=R21*at[i-4+0]+R22*at[i-4+1];
+    at[i+2]=0;
+  }
+
+  
+
+  exit;
+}

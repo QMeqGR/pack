@@ -1,0 +1,1203 @@
+4.14.1.34 (Tue Oct 19, 2010)
+============================
+
+- Fix output printing of energy to be Ha. A factor of two appears to be missing
+  also.
+
+4.14.1.33 (Thu Aug 12, 2010)
+============================
+
+- Working on init cell for clusters. Gets stuck for big clusters. Also change
+  initialization so that it only tries to put the cluster in the center of the
+  box for ``non_per_ewald`` cases and not ``use_wlmc``.
+
+4.14.1.32 (Fri Jul 9, 2010)
+===========================
+
+- Add ``wl_cell_init_dx`` to increase the box size for initialization
+  locations.  Should reduce the startup relaxations necessary and prevent this
+  hang up.
+
+4.14.1.31 (Thu Jun 17, 2010)
+============================
+
+- Print timing info last.
+- Fix ``prt_pos_tol`` flag behavior and set the ``tol`` default to 1e-3.
+
+4.14.1.30 (Wed May 19, 2010)
+============================
+
+- Printing error on findsym output. somewhere the Z of the anions gets
+  re-initialized? ``init_cell.c`` initialization doesn't work?? temporary fix
+  in ``init_estat.c``
+
+4.14.1.29 (Thu Mar 11, 2010)
+============================
+
+- Add B10H10 anion and rework the rotate_anion code to handle different
+  distances from the center to anion vertices.
+
+4.14.1.28 (Mon Mar 1, 2010)
+===========================
+
+- Fix from Fei Zhou for flatness criteria, see file
+  ``./pack/modifications/fei_zhou/wl-4.14.1.27-4.14.1.28/README``
+
+4.14.1.27 (Tue Feb 23, 2010)
+============================
+
+- Fixes from Fei Zhou, see file
+  ``./pack/modifications/fei_zhou/wl-4.14.1.26-4.14.1.27``
+
+4.14.1.26 (Sun Feb 7, 2010)
+===========================
+
+- WL algo fix from Fei.
+- Small fixes for reading input files correctly.
+
+4.14.1.25 (Mon Feb 1, 2010)
+===========================
+
+- minor fix, put search for 'restart' after search for 'simp_restarts' in
+  ``init_parms`` file. restart won't accidentally get set this way.
+
+4.14.1.24 (Mon Feb 1, 2010)
+===========================
+
+- Alter WL routine. Bin the current energy only if the trial move was
+  rejected.
+
+4.14.1.23 (Tue Jan 12, 2010)
+============================
+
+- Init routine for WL updated to allow anion self energy.
+
+4.14.1.22 (Thu Jan 7, 2010)
+===========================
+
+- Allow ``dplane`` to be set in input file
+
+- Fixed cell init routine so that angle are not automatically reset to
+  90 90 90
+  
+- Updated make_anion to be able to init with arb cell (say hexagonal) and run
+  with -L flag.
+  
+- Fixed -L flag to work with simplex routine.
+
+4.14.1.21 (Fri Jul 31, 2009)
+============================
+
+- Small adjustment to limit huge output in files.
+
+4.14.1.20 (Wed Jul 8, 2009)
+===========================
+
+- Fixed bug in translations for exceeding attempts when doing nanoparticles.
+  Also added all the exceed-attempts code to Metropolis so I'm increasing the
+  number here in case I added bugs to ``Metropolis.c.``
+- For NPE: set trans_frac automatically from the box size and dplane if not
+  set explicitly in the input file.
+
+4.14.1.19 (Tue Jul 7, 2009)
+===========================
+
+- Allow WL to reset the low energy value and reset the HST and DOS if the
+  system find a lower energy than was set in the allowed range of the input
+  file.
+
+4.14.1.18 (Thu Jul 2, 2009)
+===========================
+
+- Fix bug when using LJ in WL init.
+- Added ability to reduce the LJ interaction by setting rep_epsilon different
+  from 1.0 in the input file.  Note that the LJ energies will no longer be
+  correct if this is set.
+
+4.14.1.17 (Thu Jun 26, 2009)
+============================
+
+- Added some switches for WL to make testing the code easier.
+
+- Added few more things to the ``init_parms`` and print outs.
+
+4.14.1.16 (Thu Jun 16, 2009)
+============================
+
+- New code bungled old-style DSM runs. Fixed intialization.
+
+- Add ``sqsh_vol_pct`` to ``init_parms``.
+
+- Reworked get_hrd_dist code.
+
+- efunc=0 now works so each Z1-Z2 distance can be set independently.  Default
+  is still sum of radii if not set.
+  
+- Increased the 'typ' numbers so I can fit more cations up to 100 of each kind.
+  
+4.14.1.15 (Wed May 27, 2009)
+============================
+
+- Fix small printing header for POSCARs printed with SIGHUP.
+
+4.14.1.14 (Tue May 19, 2009)
+============================
+
+- Add metro init for bulk structures. Add variables ``wl_runs``, etc.
+
+4.14.1.13 (Sun May 17, 2009)
+============================
+
+- Fix WL init to re-init the cell if total energies remain positive.
+
+4.14.1.12 (Tue May 12, 2009)
+============================
+
+- Fix bug - centering cluster would move atoms outside the wall cushion.  Check
+  for this and reject if necessary.
+
+- Fix input file reading issues and charge balance requirement for non-periodic
+  calculations.
+
+- Lowered the self energy tolerance from 1e-8 to 1e-7 to eliminate error in
+  repulsive energy calculation.
+  
+- Lowered ``c2vtol`` from 1e-7 to 1e-6 to prevent stops.
+
+4.14.1.11 (Thu Apr 30, 2009)
+============================
+
+- Add LJrer array for LJ with mixed elements (distances).
+
+4.14.1.10 (Thu Apr 30, 2009)
+============================
+
+- Add LJeps array for Lennard-Jones with mixed elements.
+
+- The file format in the input file will be:
+  :math:`\text{def_eps} = Z1 Z2 \epsilon_Z1_Z2.``
+
+- Lower ``trans_frac`` min if it is less than ``trans_frac`` (max).
+
+- Used larger buffer in ``trans_accept`` 2*dplane, to prevent hangs.
+
+4.14.1.9 (Wed Apr 29, 2009)
+===========================
+
+- Fixes for removing PR-rest file.
+
+- Fixed file open and file close issues, should be cleaner now.
+
+- Added tolerance variable for printing POSCARs when close to ``E_low`` in WL.
+
+4.14.1.8 (Tue Apr 28, 2009)
+===========================
+
+- Add flags for printing all structures in WL.
+
+- Add variables for setting WL max energy explicitly.
+
+- Fixed bugs when saving and restarting from restart file in the WL algo.
+
+4.14.1.7 (Mon Apr 20, 2009)
+===========================
+
+- Add new flags to determine the flatness of HST. The pct of bins that are
+  filled has to be a minimum of ``wl_hst_rpt_pct``, and ``wl_hst_flat_window``.
+  
+- Add hst flatness method from paper in addition to the standard deviation
+  window criterion.
+
+- Add variable to control min energy in WL.
+
+4.14.1.6 (Thu Apr 16, 2009)
+===========================
+
+- Fixed small bug in LJ energy (same atom energy) and that makes my numbers
+  agree with Wales paper.
+
+- Turn off swap if ``n_type_ca=1`` and ``n_type_an=0``
+
+- Printing of input file to output.
+
+- Fixed big bug introduced when simplexing output and re-reading from temp
+  file.
+  
+
+4.14.1.5 (Tue Apr 14, 2009)
+===========================
+
+- Print input file to output for various needs (restarts, etc).
+
+- Allow different styles of lnfmod (sqrt or 1/n, etc).
+
+4.14.1.4 (Wed Apr 08, 2009)
+===========================
+
+- Simplex output structures so that the symmetry finder can find them.
+
+- Print elapsed time as one of the output columns.
+
+4.14.1.3 (Tue Mar 31, 2009)
+===========================
+
+- Minor fixes to printing and variables.
+
+4.14.1.2 (Mon Mar 16, 2009)
+===========================
+
+- Add variable flag to accumulate a weighted DOS so sampling of lower energy
+  states occurs more often than higher energy states. Input variable
+  ``wl_weighted_dos=1`` will do this.
+
+4.14.1.1 (Fri Feb 20, 2009)
+===========================
+
+- Will print new structure if energy is equal to last low energy structure,
+  rather than strictly lower.  May be several ground state energies with
+  different structure.
+  
+- Debug level ``-2`` will not print DOS and HST any longer. Energy output
+  printing for POSCARs is now more sig figs.
+  
+- Put variables runs and ``t_runs`` in the input file now.  (The command line
+  will be ignored if they are given there.)
+   
+4.14.1.0 (Thu Feb 12, 2009)
+===========================
+
+- Coded to optimize the energy calculation.  Recalculate only some pairwise
+  interactions for atoms that moved.
+
+4.14.0.10 (Tue Feb 03, 2009)
+============================
+
+- Changed energy settings at beginning of WL for using E.tot so LJ algo works.
+
+4.14.0.9 (Tue Dec 30, 2008)
+===========================
+
+- Make sure the nanoparticles don't get too close to the walls of the box.  New
+  function trans_accept() for ``non_per_ewald`` calculation.  This will be
+  clean and prevent wasted time for normal ewald calculations.
+
+  **Initial .0.9 code**
+
+  - Fix bugs in nanoparticle W-L code. Still need to fix energy code for
+    non-periodic calculation.  Atoms moving from one side of the box to the other
+    (ex translations) will change the energy.
+  
+  - There are too many energy evaluations in the centering code in W-L.
+
+4.14.0.8 (Sun Dec 28, 2008)
+===========================
+
+- Fix bugs when running two anions.
+
+..
+    4.14.0.7 Mon Dec 15 2008
+    -save only a subset of low energy structures
+    -begin work on optimized non-periodic electrostatic
+     energy function.
+
+    4.14.0.6 Wed Dec 10 2008
+    -big bug fix in wl_accept_
+    -fixed HST flat%
+    -fixed old poscar printing error if num_vert_x was 1
+
+    4.14.0.5 Tue Dec  9 12:58:55 CST 2008
+    -bug fixes
+
+    4.14.0.4 Wed 26 Nov 2008
+    -bug fixes
+
+    4.14.0.3 Tue 25 Nov 2008
+    -first version that kind-of works
+     Lots of debugging needed.
+
+    4.14.0.2 Mon 24 Nov 2008
+    -all moves stop after 1st MC run.
+
+    4.14.0.1 Mon 24 Nov 2008
+  
+    -debugging/optimization.
+    -increased C2VTOL from 1e-8 to 1e-7.  Needed to do this
+     because the simplex initialization for WL nanoparticle
+     code seems to introduce small numerical errors in the c2vtol
+     when moving and rescaling reapeatedly in the same direction.
+
+    4.14.0.0 
+
+    -add routine for implementing Wang-Landau MC.
+
+    4.13.0.0 Thu Feb 28 14:44:30 CST 2008
+
+    -Note: 4.13.0.0 is a development version and
+     should not be used in production.
+
+    -this release incorporates every change that is
+     also in 12.0.0.x.
+   
+    -add variable EXT_PRESS, for adding external pressure
+     and using the enthalpy H=E+pV for the functional.
+
+    -add routine for calculating forces.  This will
+     be non-periodic for the nanoparticle calcs.
+     New input variable: forces.  Set this to
+     1 to calculate and use the forces. Forces
+     are stored in the anion and cation structures.
+
+    -add flags to estat structures so that ewald routines
+     scaling can be changed.
+
+    -replaced planar NO3 anion with NH3.  Never used
+     the planar anion.
+
+    4.12.0.1 Tue Jul  1 09:05:02 CDT 2008
+    -VO changed the ewald_sums.c routine to
+    make it easier for icc to compile with
+    vectorization turned on.  Speed increase
+    is 5-20 times depending on compiler and
+    hardware!
+
+    4.12.0.0 Tue Feb 12 14:59:21 CST 2008
+    -add routine and code for nanoparticles
+    which won't use PBCs.  This will be done with
+    Eion_nopbc function.  New input variable non_per_ewald.
+    Set this to 1 to use the new energy routine.
+
+    4.11.0.5
+    Tue Jan 29 15:52:42 CST 2008
+    -allow setting of basin_hop_scale_factor_hi
+     in input file.
+    -turning off simplex routine now also turns of
+     simplex in DSM and basin hopping code.
+
+    4.11.0.4
+    Tue Jan 15 23:40:56 CST 2008
+    -add icosahedral anions.
+    -change output 'cut' comman to 'sed'
+
+    4.11.0.3
+    Sun Jan 13 20:15:11 CST 2008
+    -GPLv2 added to code
+
+    4.11.0.1
+    Fri Oct  5 13:39:25 CDT 2007
+    -add support for NO3-like planar anions.
+    -change file make_anion.c to include the new
+     anion specs.
+    -change files en_rep.c and hard_dist.c to add
+     support for self energy issues.
+
+    4.11.0.1
+    Mon Sep 10 14:31:01 CDT 2007
+    -change one line in metro algo to choose
+     polar angle of rotation properly.
+     the =   PI * drand48();  OLD WAY
+     the = PI/2.0 + asin( 2 * drand48() - 1.0 );  NEW WAY
+
+    4.11.0.0
+    Wed May 30 14:37:45 PDT 2007
+    Thu May 24 10:25:31 PDT 2007 (started)
+    -code for two kinds of anions.
+
+    4.10.0.6
+    Tue May 22 07:57:04 PDT 2007
+    Sat May 19 14:07:03 PDT 2007 (started)
+    -replaced cell scaling code in MC, lat.  This was
+     not a problem.
+    -documentation update.
+
+    4.10.0.5
+    -removed cell scaling code in MC, lat for test.
+
+    4.10.0.4
+    Thu May 10 16:35:58 PDT 2007
+    Wed May  9 09:35:30 PDT 2007
+    -v4831 is so successful, that I want to put back
+     the code that autoadjusts on rejection percentages.
+     The code will now work with both pCnt, and percentages.
+	
+    4.10.0.3
+    Thu May  3 10:41:58 PDT 2007
+    -tweak pCnt default target values.
+    -make autoadjust work if only one of -I or -J is set.
+    -removed the debug=-1 setting if basin hopping or DSM
+     switch is set. I think this info is relevant and may
+     as well be printed anyhow.  If you want to go back to
+     the old style, just uncomment the debug=-1 setting
+     where the switch is set. I want to see the rejection
+     percentages from the metro runs for temp setting.
+
+    4.10.0.2
+    Tue May  1 15:02:47 PDT 2007
+    -tweak pCnt default target values.
+
+    4.10.0.1
+    Sat Apr 28 17:03:22 PDT 2007
+    -make cation charges floats, so they are not
+     restricted to integer charge.
+
+    4.10.0.0
+    Fri Apr 27 09:10:13 PDT 2007
+    -change temp adjust code to look at pCnt instead of
+     rejection percentages.  Note: I have removed the
+     functionality of the code to autoadjust on the
+     various rejection percentages.  I hate to remove
+     functionality, but this approach with the pseudo
+     heat capacity seems to be the correct way to ensure
+     that the temperatures are correct, and that the
+     system is in the 'melt'.
+
+    4.9.0.2
+    Tue Apr 24 10:42:44 PDT 2007
+    -add printing of pCnt to basin hopping output so
+     that it is visible during basin hopping runs.
+
+    4.9.0.1 - 4.9.0.0
+    Mon Apr 16 09:06:21 PDT 2007
+    Fri Apr 13 14:41:35 PDT 2007
+    -restructure code into separate source files.
+
+    4.8.3.2
+    Mon Mar 26 11:17:56 PDT 2007
+    Wed Mar 21 12:43:33 PDT 2007
+    -allow scale changes for all lattice parms in MC
+    -change input file format to tag-value style
+    -allow tolerance for c2v distances (this is only
+     for simplex relaxing CONTCAR files from VASP, and
+     should not be used otherwise.)
+
+    4.8.3.1
+    Thu Mar  8 16:21:44 PST 2007
+    -change defaults to -Z 33 (lat and lat autoadj)
+    -change defaults to -A 650600999950
+    -change poscar output to use "D"irect with cap D
+
+    4.8.3.0
+    Fri Mar  2 16:06:59 PST 2007
+    -was 4.8.2.1 (too many changes for trivial change number)
+    -move change comments to separate file.
+    -fix squashing problem by not allowing cell planes to get
+     closer than DPLANE*d.
+    -error check input for num_vert values.
+    -fix printing of ann schedule value in parms output.
+    -change the min orth parm to 0.2. I noticed that NaAlH4
+     prim cell has orth=0.23.
+    -change the default annealing schedule to 3.
+    -add calculation of surface area of cell.
+    -change the method for calculating angle change. First,
+     we set a maximum angle change in the definitions. Next
+     we want large angle changes when the latevec angle is
+     around 90 degrees, this gives it freedom to change. We
+     want no allowed change if the latvec angle is approaching
+     0 degrees or 180 degrees.  The function (1-|x|/90) accomplishes
+     this.
+    -change the defaults for new autoadjust parms: a higher
+     rej rate for the HT anneal.
+
+    4.8.2.0
+    Fri Feb  2 15:05:58 PST 2007
+    Fri Jan 19 14:45:56 PST 2007 (begun)
+    -big jumps in pCnt are OK at low T.  It happens because one small
+     acceptance will give a large contribution to C.
+    -fixed rotation rejection numbers.  If the object choice was a
+     cation, then no rotations are possible, and the object choice
+     is roughly 50% of the time, a cation.  I introduced a counter
+     specific to rotations for this purpose.  Anions, on the other
+     hand, can undergo trans, swps, so the other rejection % are
+     not affected.  This still does not fix the heat cap issue
+     with C blowing up at low T.  All the rotation attempts at
+     low T are rejected.
+    -did same for all other rejection numbers as well.
+    -changed MAX_ANG_CHNG to 0.1, was 0.03
+    -had to set ERRLIM to 1e-6 because ewald fluctuations were
+     causing swings in pCnt. Setting to 1e-12 works completely,
+     but is too fine for fast ewald runs.
+    -altered Metro weighting for pCnt.
+    -cleaned up the printing code considerably.
+    -make debug levels more reasonable.
+    -remove setting of scale factor from command line. Something going
+     on in the code I cannot find at the moment with the rejection
+     percentages.   Need to insure that the rejection percentages are
+     followed even with scaling.  Everything works when no setting
+     the scale factor by switch.
+    -introduce anneal_sched 0 for linear temp scale.  This is only
+     for use in straight  metropolis for determining the peak in pCnt,
+     so this won't work for basin hop or DSM runs.
+
+    4.8.1.0
+    Thu Jan 18 08:12:42 PST 2007
+    -pass the ortho squash fraction to the repulsive
+     energy calculation and then to the distance function.
+     If orth < 0.7, calculate the repulsive contribution
+     out to 2 cells in each direction, instead of one.
+
+    4.8.0.0
+    Wed Jan 17 08:07:31 PST 2007
+    -fix the spherical anion case (cac).  Make this an anion
+     with zero vertices, or the total number of vertices is 1.
+     There should be no variable an_coord any longer.
+
+    4.7.2.2
+    Tue Jan 16 09:27:02 PST 2007
+    -add constants to printed output.
+    -changed n_halt_chng to 15 (was 8).
+    -changed some printing of headers during run for basin_hop > or < 0.
+    -added comments for file format (to make sure input is OK for cac).
+
+    4.7.2.1
+    Thu Jan 11 08:20:37 PST 2007
+    -change the squash vol pct to 0.5 (was 0.85)
+    -increase max angle change to 0.03 radians (was 0.003)
+     for lat parm changes.
+
+    4.7.2.0
+    Mon Jan  8 12:52:53 PST 2007
+    -had to lower the self energy tolerance
+     to 1e-8 in distsq ssrep. was 1e-10.
+
+    4.7.1.0   (was 4.7.0.1)
+    Thu Dec 14 13:24:46 PST 2006 (started)
+    Wed Dec 20 15:06:02 PST 2006 (final)
+    -small fix for cac cases like NaCl, where unit cell
+     allows overlap of anions. in an-an interaction put
+     j<=i in second loop, so it goes over itself at 0,0 for 1fu.
+    -made more clear file format for cac case with -F switch.
+    -remove best compare for DSM basin hop, otherwise it may go to
+     much earlier structure.
+    -One case of overlapping anions is very difficult to deal with.
+     If the anion lies on the cell boundary, with one vertex
+     sticking out, say in the (100) direction.  It will have frac
+     coordinates of say (1.01, 0.0, 0.0).  This will be put
+     at (0.01, 0.0, 0.0).  Then during computation of the
+     overlap energy, it will have a periodic image at
+     a1,a2,a3=1,0,0, of (1.01,0.0,0.0), (which was the atom's
+     position for that particular anion), and an overlap will
+     be calculated. If we try to avoid calculating the self-energy
+     of each anion by never calling the Energy_rep function
+     for cases where we know the two vertices are on the same anion,
+     then we may miss instances where the cell size is small
+     and the periodic image actually DOES begin to overlap. However,
+     we can do the following.  We can calculate the self-energy
+     overlap of the vertices at the outset of the code and note
+     the overlap.  When we are calculating the same anion (i==j)
+     we can check if the overlap that exists is the self-energy
+     overlap.  If it is, we discard it.  It is unlikely that a
+     random overlap caused by a any periodic or other image will
+     be exactly the self-energy overlap.  We can set a high
+     tolerance to make sure.
+    -set SIMP_ERRLIM to 1e-8.
+
+    4.7.0.0
+    Mon Nov 27 13:21:07 PST 2006
+    -fix confusion in help option display ( -B option and -F option )
+    -allow basin hopping two ways.  1. if basin_hop is positive, use
+     the usual distance scaling method. 2. if basin_hop is negative
+     do NOT use scaling, and also reset the cell contents at every
+     hop.
+    -fixed bug from 4.6.2.0 in a better way which allows cac
+     runs to also function properly.  The 'fix' listed below
+     in 4.6.2.0 is not really a fix since it allowed cac
+     anions to overlap.
+    -set SIMP_ERRLIM to 1e-4, smaller energy changes are essentially
+     useless here.
+  
+    4.6.2.1
+    Tue Aug  8 11:01:57 PDT 2006
+    -added switch to adjust autoadjust config acceptance ranges.
+
+    4.6.2.0
+    Sat Jul 29 15:46:31 PDT 2006
+    -fixed overlapping vertex-vertex constant addition to the total
+     energy problem.  It was a two-character fix.  && --> ||
+
+    4.6.1.0
+    Mon Jul 24 16:38:55 PDT 2006
+    -added switch to adjust initial random seed.
+    -Note: there was a srand48() call just before the MC loops, that
+     should not have been there.  I removed it.  There may have been
+     fewer random changes in the previous versions.  The srand call was
+     made at the beginning of each metro run. If the metro runs were
+     long it may not have been an issue.
+    -fixed bug.  Needed to call L_e3 at the end of the lat parm change
+     in the Metro algorithm.
+    -added -v switch for version number.
+
+    4.6.0.3
+    Thu Jun  1 08:35:30 PDT 2006
+    -fix some printing issues.
+    -readjusted constant for number of simplex runs in bh
+    -readjusted constant for number of simplex restarts in bh
+
+    4.6.0.2
+    Wed May 31 2006
+    -does not include simplex under DSM.  Must move
+     atoms off one another during these runs.
+    -add exp schedule for basin scaling, instead of linear.
+
+    4.6.0.1
+    Wed May 31 08:55:37 PDT 2006
+    -uses simplex while still under DSM.
+    -use many more simplex steps this time.
+    -increase the simplex restarts from 4 to 10 for
+     each basin hop.
+
+    4.6.0.0
+    Thu May 25 07:57:23 PDT 2006
+    -Begin coding distance scaling method.
+    -Remove Energy_lj function, it was never used and never
+     debugged. LJ stuff is contained in Energy_rep.
+    -The distance scaling method can be coded most simply by
+     a scaling of the lattice parameters, and correcting the
+     anions, as usual for a change in lattice parameter. Try
+     first to do this in the function Total_Energy, once at
+     the beginning of the function, and once at the end to
+     rescale back to normal.
+    -Re-write all the basin hopping code in main to use this
+     method.  We won't need to reseed the cell contents at
+     all now, now that we're doing things 'properly'.
+    -Should not need pf_anneal now.  Try removing it.
+    -new function: scale_cell
+    -new global variable: scale_factor
+
+    4.5.0.8
+    Mon Mar 20 13:11:16 PST 2006
+    -working on pf_anneal algorithm.
+    -This algorithm performs one metro run with pack_frac_min set equal to 1.
+     This is followed by one simplex run to move atoms off of one another, and
+     then the pack frac min is set to E.pf.  Seems to work well for setting
+     the basin hopping pf min.
+
+    4.5.0.7
+    Wed Mar 15 09:36:44 PST 2006
+    -fix auto adjust temp.  If step size gets too small...
+    -modify find_pf_min routine to slowly lower the temperature
+    until the packing fraction doesn't get any better.  Change name
+    to pf_anneal.  This doesn't work well as of now.
+    -removed max_ang_chng from autoadjust, because it led to too
+    many acceptance moves for the angles and poor choice of temp.
+
+    4.5.0.6
+    Mon Mar 13 10:41:12 PST 2006
+    -this version resets the cell contents.
+    -fixes printing issue after final simplex run.
+
+    4.5.0.5
+    Fri Feb 17 13:38:36 PST 2006
+    -fix command line switches. If -I and -J are set, then
+    set -V (no temp autoadjust).
+    -this version resets the cell at each hop.
+    -added one small change to the 'best compare' code
+    to not swap if the best eng is greater than the post runs.
+
+    4.5.0.4 (transitional)
+    Mon Feb 13 07:53:00 PST 2006
+    -set max_ang_chng to 0.001 rads or about 0.05 degrees
+    to help prevent cell squashing.  This is a factor 10
+    smaller than previous.
+    -fixed trivial exit_pack error with -h switch.
+    -add E.orth and calculate it in total energy.
+    -add 'find pack frac min' code.
+
+    4.5.0.3 (transitional)
+    Wed Feb  8 10:03:39 PST 2006
+    -get interrupts to work properly with new basin hopping.
+    -clean up removal of temp file code and make it work
+    for everything. Use new function exit_pack, and free_memory.
+    -increase SQSH_VOL_PCT to 0.70.  Even these look really
+    squashed!  Added this to total energy calc also, so that
+    the cell won't get squashed in the simplex runs.  This is
+    somewhat artificial, but I don't know of a better way
+    to do this.
+    -create function cell_init to re-initialize the cell contents
+    to random locations for each new basin run.  Took code from
+    main to do this and modularized it.
+    -consolidate printing code for tempfile and restart files to
+    prevent errors later on.
+
+    Thu Feb  9 07:52:18 PST 2006
+    -the problem in Notes 1 is that make_tetr and the others
+    contain local variables for tetr, octa, etc., so that when
+    the object is returned, it has no radius or z values set.
+    The function cell_init now does this each time it is called.
+
+
+    4.5.0.2 (transitional)
+    Tue Feb  7 08:10:03 PST 2006
+    -attempt to solve the problem of angles going over 120 degrees
+    by simply making those moves return a high energy and be
+    rejected.
+    -fixed bug in distsq_pbc.
+
+    4.5.0.1 (transitional)
+    Mon Feb  6 12:20:38 PST 2006
+    -make modifications to basin hopping.
+  
+    4.5.0.0 (transitional)
+    Fri Feb  3 13:16:39 PST 2006
+    -incorporate MC with minimization routine to do
+    "basin hopping". Put simplex after short MC runs
+    and minimize.  Save the structure if it is lower than 'best'.
+
+    4.4.2.0
+    Fri Feb  3 08:17:11 PST 2006
+    -swapping should occur between cations of
+    different type.  Add this code to metro.
+
+    4.4.1.0
+    Thu Feb  2 16:03:04 PST 2006
+    -fixed serious bug in total_energy, setting
+    of nat to wrong value made eion answer incorrect.
+    This bug ( a num_vert assignment error ) does not
+    affect earlier versions, 3.1.10 for example.
+    I tested the output of some of those runs and the
+    calculated ecc is correct.  The num_vert
+    error is corrected in the estat init function,
+    which just recalculates it.
+
+    4.4.0.4
+    Thu Feb  2 12:53:02 PST 2006
+    -changed printing out of poscar file to include
+    a space after the last Z value, and to output
+    a special poscar file which includes the charges
+    for the program ewald.
+
+    4.4.0.3
+    Mon Jan 30 08:03:03 PST 2006
+    -attempt to make autoadjust faster.  Can't find an
+    algorithm that works better, without making it much
+    more complicated.  Changed the printing of temp
+    values.
+    Tue Jan 31 09:49:24 PST 2006
+    -corrected an error where the final temp setting in
+    autoadjust can go below zero.
+
+    4.4.0.2 (first working version)
+    Thu Jan 26 07:53:40 PST 2006
+    -fixing the squashing cell issue. Have to
+    do a re-write of the SS repulsive energy code.
+    Removed the slf_flag and replaced it with the
+    same_atom flag.  Changed the way it worked
+    slightly.  Seems to be working properly.
+    -in energy rep routine, had to add TINY to
+    the distsq value in case the distsq was within
+    1e-16 of the min value.
+    -don't allow lat parm changes that take the
+    cell volume below 50% of a*b*c.
+
+    4.4.0.1 (transitional)
+    Wed Jan 25 22:54:14 PST 2006
+
+    4.4.0.0 (transitional)
+    Sun Jan 22 12:49:28 PST 2006
+    -Remove orthorhombic restriction.
+    -Removed -H option (program detail).
+    -new functions:
+       cell_volume -- calculates cell volume
+       calc_cell_basis  -- calculates the cell basis vectors after changes in abc,alph,bet,gam
+       L_e3 -- puts the cell basis vectors into the transformation matrix (will be lower triangular)
+       Linverse -- calcs the inverse of L_e3 explicitly (not a general inverter)
+       UTMvmult -- lower triangular matrix on vector mult
+       cart -- returns the E3 coordinate of atom using L and fractional coordinates in lattice frame
+       Ctrans -- calculates the E3 coordinate changes using L_old and L_new.
+       vertex_new -- used after lat parm change
+       ca_an_new -- used for cations and anion centers after lat parm change
+    -change functions:
+       rot_tetr octa and dimer to rot_anion.
+       trans_tetr octa and dimer to trans_anion.
+       rescale_tetr ocat and dimer to rescale_anion.
+
+
+    4.3.0.0
+    Sat Jan 21 14:33:27 PST 2006
+    -clean up TET and OCT variables to require only
+    the an_coord variable.
+    -add dimer anion type.
+
+    4.2.0.1
+    Fri Jan 20 15:11:22 PST 2006
+    -change the place where the temp file
+    is created, so that if the program exits
+    on error it is less likely to leave a
+    temp file.
+
+    4.2.0.0
+    Tue Jan 10 15:46:22 PST 2006
+    -added autoadjust for finishing temperature.
+    -change Cp name to "pseudo heat capacity".
+    -add ability to set temperature based on the
+    different config change choices. It now sets
+    the HT temp via swaps and the LT temp via
+    lat parm changes.
+
+    4.1.4.1
+    Tue Jan 10 08:12:36 PST 2006
+    -added trivial version for simple
+    things like changing printing.
+    -changed printing of variable 'runs' in
+    the header to correctly show the total
+    number of loop runs per temperature.
+
+    4.1.4
+    Thu Jan  5 14:31:34 PST 2006
+    -automatically choose the same number of
+    config changes (runs) depeding on the number
+    of degrees of freedom of the system, calculated
+    as (6 or 3)*num_anions + 3*num_cations + 3(lat).
+
+    4.1.2
+    Thu Jan  5 09:45:18 PST 2006
+    -when temperature adjust routine gave value of
+    temperature lower than the set stopping
+    temp, the intended metro run would stop after
+    the first cycle.  This is fixed here with code
+    that will divide the set stopping temp by 10
+    until it is lower than the output from the
+    temp-adjust routine.
+
+    -remove tempfile if there is an error opeing
+    the input file, best file, or restart file.
+
+    4.1.1
+    Wed Dec 21 07:22:01 PST 2005
+    -make the autoadjust routine more
+    robust and accurate, by allowing the
+    temp step size to be modified if
+    we overshoot the mark going either
+    up or down.
+
+    4.1.0
+    Mon Dec 19 14:18:08 PST 2005
+    -add auto anneal feature to set the
+    starting temperature to a point where
+    the swap percentage is roughly 0.70
+    -removing the code for the 'initial'
+    metropolis run that I never used. It
+    was for running an initial metro run
+    to get atoms off the top of one another,
+    but this has turned out to be unnecessary.
+
+
+    4.0.6
+    -set trans frac max to 0.5, this
+    allows translations over the whole cell.
+    Anything larger than 0.5 is useless.
+    See a plot of the output of the transvec
+    translation vectors for proof, or
+    see alanate book 3 p 120-121.
+
+    4.0.5
+    Tue Dec 13 10:43:54 PST 2005
+    -increase the volume change
+    parameter back to 15%, the level
+    it was in 3.1.10
+
+    4.0.4
+    Mon Dec 12 09:29:37 PST 2005
+    -increase the number of 100pct
+    swps from 3 to 4 before turning
+    off swaps.
+
+    4.0.3
+    Wed Dec  7 07:35:30 PST 2005
+    -renamed the library code packlib.c
+    -changed the translation code in
+    the simplex routine to make it
+    the same as the code in the metro
+    routine. Did this to keep the anion
+    from walking across a cell boundary.
+    Changed trans frac max back to 0.4
+
+    -bug fix in Eion from V.O. see source
+    in packlib.c
+
+
+    4.0.2
+    Wed Nov 23 08:00:12 PST 2005
+    -adding code to stop config changes
+    after they have been rejected at
+    100% for two temperature steps.
+    Should significantly speed the
+    code up. Changed the volume
+    fraction max change to 10%.
+    -cleans up temporary files now,
+    if the run was stopped with -INT.
+
+    4.0.1
+    Tue Nov 22 13:22:22 PST 2005
+    -resolved overlap issues.
+    Changed Energy_rep significantly.
+    Introduced new function: distsq_self.
+    Separating LJ and SS functionals.
+
+    4.0.0
+    Mon Nov 14 16:32:59 PST 2005
+    -changing the core of the code to put
+    charge on both the anion center and
+    anion vertices.  The 2.x.x series is
+    now considered obsolete.  Due to
+    the substantial differences between
+    the 4.x.x and 3.x.x series, the 3.x.x
+    series will not be fixed.  The
+    file format has to change again.
+
+    -This change has revealed a bug in the
+    code that arises when the cell length in
+    any one dimension is less than about
+    twice the 'center-to-vertex' length of
+    the anions.  In this case, after atoms
+    have been 'rezoned', (necessary for fast
+    energy calculations), it is difficult to
+    tell which periodic image gives the
+    correct c2v length, and therefore where
+    to move the vertex for rotations of the
+    anion.  This bug never came up in previous
+    versions for some reason.  But with a
+    suitable choice of c2v length and using
+    only one anion, it is there in v3.1.10.
+    It never came up in the metropoilis runs
+    because I had a min-cell requirement.
+    I will soften that constraint in the metro
+    code if possible.
+
+    -Set cell_max to 10*cell.a.
+    Previously 2*cell.a.
+
+    -In order to solve the problem stated
+    above, the code will be coded as
+    follows:
+    --restrict translations of cations and
+    anion centers to be strictly within bound
+    of the cell size. Anything above 1.0 or
+    below 0.0 is forbidden.
+    --rezone only for energy calcs, i.e.,
+    inside of estat_init or energ_init.
+  
+    changed:
+    estat_init;
+    energ_init;
+    rot_tetr, octa;
+    trans_tetr, octa;
+    print_c2v_tet, oct;
+    make_tet, oct;
+    trans_cat;
+    Energy_rep (to now interact with anion centers,
+    since they now have charge)
+  
+
+
+  ------------------------------------------
+
+    3.1.10
+    Fri Nov 11 07:49:52 PST 2005
+    -changed the ASPECT_MAX default to 20.
+
+    3.1.9
+    Mon Nov  7 11:08:52 PST 2005
+    -changed the temporary file from being in /tmp
+    to being in the directory the program was started
+    from.  This avoids tmpwatch problems.
+
+    3.1.8
+    Thu Nov  3 12:47:55 PST 2005
+    -fixed bug which resulted in glibc error/warning.
+    It was setting current_config=-1, which read a
+    forbidden part of memory.
+
+    3.1.7
+    Mon Oct 31 07:12:28 PST 2005
+    -fix 80 column output printing.  Print
+    cell volume in metro and simplex output
+    and fix sigesqr output.
+
+    3.1.6
+    Thu Oct 27 09:23:15 PDT 2005
+    -calculate the specific heat correctly. Added
+    weighting code to the metropolis function.
+
+    3.1.5
+    Thu Oct 13 08:20:26 PDT 2005
+    -fix the energy fluctuation calculation in the
+    metropolis algorithm.  Include energy changes
+    after each move instead of at the end of each
+    'run'.
+  
+
+    3.1.4
+    Wed Oct 12 13:43:08 PDT 2005
+    -modified 'holding' criteria to be able to
+    set which rejection percentage to hold on.
+
+    3.1.3 **
+    Tue Oct 11 09:14:09 PDT 2005
+    -fixed another bug in Metro, with the choice of
+    order of operations.  The case construct needed
+    'break's after each case, the result previously
+    was to default to the last choice, so the order
+    was not random.  This is now fixed.
+  
+    -Also changed the code for Energy_rep when
+    doing the SS repulsion to only sum over one cell,
+    and use distsq_pbc(). This significantly speeds up
+    the code another 20% over 3.1.0.
+
+    -added one more condition to the 'best' code.
+    In the first swap condition, the volume change
+    had to be within BEST_VOL, but what if the 'best'
+    volume was much lower, say 20%?  I added the
+    condition, that if the 'best' volume was lower,
+    it will also switch.
+
+    3.1.2
+    Mon Oct 10 12:54:08 PDT 2005
+    -fix for Energy_rep, which now needs to take into
+    account that there are two types of cations.  Had
+    to alter Energy_rep, get_hrd_dist,
+    get_min_distances, and the hd structure.
+
+    3.1.1 **
+    Sat Oct  8 12:30:50 PDT 2005
+    -fixed bug in order of operations in Metro.  All
+    operations were performed, but not in random order.
+    Fixed the output of the 80 column print function,
+    lat and swp were swapped.
+
+    3.1.0 **
+    Thu Oct  6 16:18:13 PDT 2005
+    -modified Energy_rep to use the square of the
+    distance instead of the distance itself, which
+    requires a square root call.  I also replaced the
+    pow(1/r^2,3) call with three multiplies. This
+    speeds up the code by about 11%
+
+    3.0.0
+    Wed Oct  5 10:17:50 PDT 2005
+    -modify to accept two types of cations.  This is a big
+    modification, and will also require a change in the
+    input file format.
+
+    -----------------------------------------------------
+
+    2.4.9
+    Mon Oct  3 09:18:20 PDT 2005
+    -set the packing fraction minimum to 1e-4. Since
+    the fix of the ewald code it is no longer neccessary
+    to force the cell volume to shrink.
+
+    2.4.8
+    Sat Sep 17 12:49:02 PDT 2005
+    -eliminated vector calling code from amotry_ehm and
+    amoeba_ehm.  This eliminates the need to link to NR
+    library code completely, and should speed up the app
+    since there will be lower system call overhead.
+
+    2.4.7
+    Fri Sep  9 10:03:09 PDT 2005
+    -fixed Eion code from VO. Addresses the ERRLIM question
+    described below. Use ERRLIM 1e-4 for default.
+    -made SIMP_LAMB a modifiable variable.
+
+    2.4.6
+    Thu Sep  8 13:00:41 PDT 2005
+    -added code to 'restart' the simplex routine.  This is
+    a necessary piece of code for the Simplex routine to
+    work properly, so I'm considering it a bug fix.
+
+    2.4.5
+    Wed Sep  7 17:53:10 PDT 2005
+    -major bug fix. found errors in find_Ewald_eta. fixed
+    them.  now the code runs faster and gives the correct
+    output. There is still the issue of ERRLIM needing
+    to be very high, and the energy jumping around and
+    not getting 'better' with higher ERRLIM.  Will ask
+    VO about this. Meanwhile, set ERRLIM at 1e-12.
+
+    2.4.4
+    -minor fix.  Added error checking to input temps to
+     make sure they are both greater than zero.
+
+    2.4.3
+    -Big bug fix.  Needed to reset the cell.bas structure
+     with new cell parameters before calling Eion.  I added
+     this code to Total_Energy(), since this is the only
+     function that should be calling Eion.  The code should
+     now run properly.  Use ERRLIM 1e-3 and PRESS_DVOL 1e-4.
+     Note, this should fix the problem in version 2.4.2 with
+     the pressure calculation, since in that calculation the
+     volume change was calculated by changing the lattice
+     parameters.
+
+    2.4.2
+    -pressure calc works without introducing strange error if
+     PRESS_DVOL = 1e-4 or 1e-10... for some strange reason
+     1e-8 causes a problem.  I can't figure this one out yet.
+     Output of the Distances: has been modified to %e, to give
+     the very small values.  With PRESS_DVOL = 1e-8 there are
+     small ca-an distance violations, but tolerance values
+     in the rescale_tetr code do not seem to be the problem.
+     Use PRESS_DVOL 1e-4.  This gives exactly the same answer
+     for Px,Py,Pz for the test case NaCl 4fu cell, as it should.
+
+    -Using ERRLIM 1e-4 gives the correct Madelung energy for
+     the NaCl test case.  Other values, even 1e-10 give the
+     wrong value.??
+
+    2.4.1
+    -fixed buggy translation of VO code. (was on Vicodin)
+    -changed ERRLIM defalut to 0.01 from 0.1
+    -changed PRESS_DVOL to 1e-10 (something funny going on for 1e-8 value???)
+
+    2.4.0
+    -added calculation of the pressure of the system via
+    P = -dE/dV
+
+    -changed TRANS_FRAC_MAX from 0.9 to 0.4, noticed that
+    for spherical systems it works much better at 0.1
+    this is probably the case for large values of runs,
+    where the system can relax simply due to the large
+    number of moves.
+
+    -added another condition to the 'best' vs. metro
+    structure picking algorithm.  Must have
+    (best_vol - metro_vol)/metro_vol < 0.1
+    To avoid having a really large volume structure
+    picked over a well-packed one.
+    Defined BEST_VOL for this number.
+
+    2.3.7
+    added E.ecc_eng, E.ecc + E.eng to the energy structure
+    Had to do this to fix the bug that when a structure
+    had lower cell volume it would be favored as the
+    'best' structure even when the another cell had
+    much better ecc+eng energy.
+
+    2.3.6
+    changed the output of SIMP_ERRLIM to %.2e
+    reordered some of the output variables
+
+    2.3.5
+    increase the precision for the simplex run,
+    #define SIMP_ERRLIM 1e-10
+
+    also, leave the cell volume in the functional by
+    default, since this seems to work best so far.
+    #define PACK_FRAC_MIN 0.99
+
+    2.3.4
+    increased SIMP_NMAX to 500000,
+    simple modifications of output and so forth.
+
+    2.3.0
+    added 'best' structure saving feature and swapping with
+    post metro structure if the energy was lower.
+
+    2.2.0
+    fixed up 'restart' output and added to common output format
+
+    2.1.0
+    added 'restart' capabilities
+
+    2.0.0
+    added simplex routine

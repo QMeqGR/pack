@@ -1,0 +1,347 @@
+PACK - a Monte Carlo structure searching program
+Copyright (C) 2008 Eric H. Majzoub
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+Updated: Tue May 22 08:33:07 PDT 2007
+
+##################################################################
+##################################################################
+
+Compiler bugs and whatnot:
+
+GCC 4.0.2 has a bug, don't compile with it!
+It is visible when viewing the xbsa output,
+which shows the cell borders are mucked up.
+
+Intel icc vector optimizations will cause some error in
+rotate_anion.c, and it must be compiled separately!
+Just do: icc -c rotate_anion.c
+followed by make
+
+SEE MAKEFILE FOR OTHER KNOWN COMPILER ISSUES AND PROBLEMS
+SEE MAKEFILE FOR OTHER KNOWN COMPILER ISSUES AND PROBLEMS
+SEE MAKEFILE FOR OTHER KNOWN COMPILER ISSUES AND PROBLEMS
+SEE MAKEFILE FOR OTHER KNOWN COMPILER ISSUES AND PROBLEMS
+
+
+##################################################################
+##################################################################
+
+
+This README contains:
+(i)   information on the program source code
+(ii)  installation instructions
+(iii) using the code and its output
+(iv)  code limitations
+
+A description of how the code works is in the file global_opt.pdf.
+
+The package will compile three programs, two of which are useful.
+
+pack  -- the MC code
+ewald -- a standalone program that will calculate the Ewald energy
+	 of a structure given a POSCAR/CONTCAR file with an extra
+	 line containing charge information.
+rescale -- an outdated program
+
+
+
+(i) 'pack' source files:
+----------------------------------------------------------------
+amoeba_ehm.c		-- part of simplex routine
+amotry_ehm.c		-- part of simplex routine
+autoadjust_pCnt.c	-- temp autoadjust using pseudo heat capacity
+autoadjust_rejpct.c	-- temp autoadjust using rejection percentages
+cell_basis.c		-- recalculates cell basis after lat changes
+chk_bounds.c		-- checks anions and cations for bounds violations
+compare.c		-- 'best' compare code
+dist_fcns.c		-- PBC and non-PBC distance functions
+dsm.c			-- the distance scaling code
+en_rep.c		-- repulsive energy code
+ewald_sums.c		-- Ewald code (translated from VO fortran)
+global_defs.h		-- global #defines
+global_vars.h		-- global variables
+hard_dist.c		-- hard distances determined from atomic radii
+init_cell.c		-- initializes cell contents
+init_energ.c		-- initializes structures for energy calcs
+init_estat.c		-- initializes structures for energy calcs
+init_parms.c		-- gets the parameters from input files
+init_simplex.c		-- initizlize simplex routine
+lat_pathological.c 	-- checks for dplane violations
+main.c			-- the main program
+make_dimr.c		-- makes dimer
+make_octa.c		-- makes octahedron
+make_sphr.c		-- makes sphere
+make_tetr.c		-- makes tetrahedron
+matrix.c		-- matrix operations
+metropolis.c		-- the metropolis code
+pack_frac.c		-- calculates the packing fraction
+packlib.c		-- misc small utility functions
+packlib.h		-- function definitions
+pf_anneal.c		-- pf anneal code
+pressure.c		-- dE/dV code
+printing.c		-- printing functions
+rescale_anion.c		-- rescale anions after lat change
+rezone.c		-- rezone function
+rotate_anion.c		-- rotates anions
+simp_trans.c		-- move simplex function
+simplex.c		-- simplex master code
+tot_energy.c		-- total energy function
+translate.c		-- translation code
+
+pack.9 			-- man page (outdated, use pack -h)
+packlib.h		-- header stuff
+
+
+misc. source files:
+ewald.c 		-- stand alone program takes a modified CONTCAR file
+           		   and returns the ewald energy.
+rescale.c 		-- see documentation below.
+
+Script files:
+pack_run.sh      -- script to run pack
+gen_pack_inp.awk -- awk script to generate input files for pack
+*pack_batch.sh   -- run a set of 'pack' runs
+pack_batch_2.sh  -- uses the script pack_machines to find machines on a cluster
+pack_machines    -- bash script to find open machines on a cluster
+pack_tar.sh      -- script to tar up the pack source code
+*packplot.sh     -- generate xmgrace input files
+pack_reduce.sh   -- grabs some info from the pack .bs files
+script_run.sh    -- runs multiple pack instances on a cluster with qsub
+str_tbl_par.sh   -- see documentation below
+
+* = out of date
+
+README -- this file
+
+
+(ii) COMPILING 'pack':
+-----------------------------------
+
+To make 'pack_exe' executable in this directory:
+
+$ make
+
+To install as ~/bin/pack:
+
+$ make install
+
+
+(iii) Running 'pack':
+-----------------------------------
+
+The program has a long list of command options, some of which
+can be set in the input file.  Not all options available on the
+command line can be set this way.
+
+The input file format can be seen with the -F option.
+
+=================================================================
+[ehm@dirac ehm]$ pack -F
+# Input file format                          distance units [ang]
+
+# The file format is: tag = value   ! comments after exclamation
+
+cella = 10            !   lattice vector magnitues in angstrom
+cellb = 10            !   lattice vector magnitues in angstrom
+cellc = 10            !   lattice vector magnitues in angstrom
+alph = 1.570       !   in RADIANS!!!  90 deg = 1.5707963267949
+beta = 1.570       !   in RADIANS!!!  90 deg = 1.5707963267949
+gamm = 1.570       !   in RADIANS!!!  90 deg = 1.5707963267949
+num_vert = 5       !               (1=sph 2=dimer 5=tet 7=oct)
+num_an = 2         !                                num anions
+an_chrg_c = 0.0    !                       anion center charge
+an_chrg_v = -0.25  !                       anion vertex charge
+d = 1.65            !                         center to vertex
+Rcent = 0.1                               !   radius of center
+Rvert = 1.5                               !   radius of vertex
+Zcent = 13                                    ! Z anion center
+Zvert = 1                                     ! Z anion vertex
+n_type_ca = 2           !   num of types of cations, (1, or 2)
+num_ca_1 = 1                   !   number of cations of type 1
+ca_chrg_1 = 1                   !  charge of cations of type 1
+Rcat_1 = 0.97                   !  radius of cations of type 1
+Zcat_1 = 19                     !       Z of cations of type 1
+num_ca_2 = 1                   !   number of cations of type 2
+ca_chrg_2 = 1                   !  charge of cations of type 2
+Rcat_2 = 0.67                   !  radius of cations of type 2
+Zcat_2 = 11                     !       Z of cations of type 2
+c2vtol = 0.1  ! WARN def = 1e-8, change only to relax CONTCARs
+
+# for charge-at-center  structures,  make sure  that  d=0, Rv=0,
+# all charge is on CENTER, and Zcent is what you want any output
+# files to reflect.
+# No spaces before variable names allowed.
+=================================================================
+
+
+--
+The simplest invocation is:
+
+$ pack -f infile > outfile &
+
+Output is written to stdout unless redirected.  The output can be
+directly viewed with xbsa (modified by ehm), and contains embedded
+POSCAR files as well as other formats.
+
+--
+To check if an input file is OK without a lengthy run, try:
+
+$ pack -f inputfile -V -E -W > in.bs 
+
+This turns off (-V) the auto temperature adjustment, (-E) any
+metropolis runs, and (-W) the final simplex run, respectively.  This
+will just read the input, initialize a cell, and print it out.
+
+--
+For a single Metropolis MC run, one would use:
+
+$ pack -f infile -r 2000 -t 10 -g 345 > outfile &
+
+This would produce an MC run with 2000*DOF loops over the config
+changes, with 10 temperature steps.  A good value for the -r switch is
+2000.  The number of actual loops depends on the number of degrees of
+freedom defined by the number of atoms in the structure.  The -g
+switch is for the random number generator and must be set for
+different runs on the same input to generate different output.
+
+--
+For a distance scaling method (DSM) run, one would use:
+
+$ pack -f infile -r 2000 -t 10 -B 25 -g 2524 > outfile &
+
+This runs 25 MC runs while decreasing the DSM scale to unity.
+
+
+--
+For a basin hopping run (coordinate resetting, ala Li and Scherraga)
+give -B a negative argument:
+
+$ pack -f infile -r 2000 -t 10 -B -25 -g 2524 > outfile &
+
+This will do 25 hops.  Note: DSM seems to work better.
+
+
+DISTANCE SCALING METHOD OUTPUT:
+------------------------------------------------------
+The output from the DSM method looks like:
+
+*           -- DSM Routine --
+*
+*H   step            ecc            ess         a       b/a       c/a    alph    beta    gamm      orth      pCnt     scale    t_init
+*B      4   -7.48106e-01    0.00000e+00    10.011    0.8953    1.0458    88.4    83.0   101.1    0.9728  1.10e+05    1.2500  3.50e-02
+*B      3   -7.61261e-01    0.00000e+00     9.172    0.9599    1.0110   107.1    86.4    99.7    0.9420  3.67e+03    1.2456  3.28e-02
+*B      2   -7.90850e-01    0.00000e+00     8.111    0.9341    1.0376   109.1    79.3   107.0    0.8990  8.87e+01    1.2156  2.06e-02
+
+The columns are:
+ecc    -- Ewald energy in [Ha]
+ess    -- soft-sphere overlap energy (should be zero!)
+orth   -- ratio of (cell volume)/(a*b*c) , a measure of cell 'squashing'
+pCnt   -- pseudo heat capacity given by the energy fluctuations
+scale  -- DSM scaling factor (note ecc energy is the actual energy without scaling)
+t_init -- MC T_0 (decreases as scaling approaches unity)
+
+
+
+Extracting the POSCAR file:
+------------------------------------------------------
+The POSCAR file is embedded in the output.  Two ways to extract
+the POSCAR file are:
+
+1) cat outfile.bs | awk '($1=="*P"){print $0}' | cut -d" " -f 2-300 > POSCAR
+2) pack_run -o ${file%%.bs} -D
+
+In the second option, the output file switch should be given the name of the
+.bs file without the .bs.  If the output is named asdf.bs, the command
+would be "-o asdf"
+
+
+(iv) General notes:
+-------------------------------------------------------
+
+1. The default values work pretty well.  The only things that have to
+be set are -B, for DSM or basin hopping runs, and the -g switch to
+ensure one is getting different structures for identical input files.
+
+2. For DSM runs, the debug level is set to a special value of -1.
+This turns off output for each of the MC runs, and the simplex
+minimizations.  If you want to see all that information, just set the
+debug level to 0.  Each output file may be on the order of 1M.  Using
+a debug level above 0 will generate an enormous amount of output.
+
+3. The code is currently limited to a maximum of two different types
+of cation, and only one type of anion.
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------
+Below this line is outdated information:
+----------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+OTHER DOCS
+----------------------------
+
+There is a need to take a batch of output runs,
+consisting of *.bs files and to re-relax each
+of the structures with the other parameters in
+the batch.  For this task, the script str_tbl_par.sh
+and str_tabl_seq.sh (sequential version)
+will extract restart files from each .bs file and
+combine the starting parameters for each file
+with the atomic positions of each of the other
+files.  Essentiall it takes the input parms
+from one file and makes new restart files
+by putting this input section into the other
+restart files, and then doing simplex on them.
+The restart file structure is shown below.
+
+====================
+cell parms
+--------------------
+input parms
+--------------------
+atomic positions
+====================
+
+*rescale.c was not needed for the table stuff!!*
+The program rescale, which is just a set of functions from
+pack.c, takes hard wired files as input and rescales
+a set of atomic positions for new coordinates. I
+wrote it initially for the table stuff above, but
+found I didn't need it later.  I keep it here just
+in case I find use for the code later.  If the main
+version of the code changes significantly, or
+the file format changes, from version 4603, then
+this rescale.c program will probably not work.
+
+

@@ -1,0 +1,24 @@
+cella  = 10  ! cell parms
+cellb  = 10
+cellc  = 10
+alph   = 90 ! alpha
+beta   = 90
+gamm   = 90
+
+n_type_an = 1   ! number of types of anion
+num_an_1 = 1
+num_vert_1 = 13
+an_chrg_c_1 = 0
+an_chrg_v_1 = 0.0833333333333333
+cvd_1 = 1.5    ! c2v distance for anion 1
+Rcent_1 = 0.5
+Rvert_1 = 0.8
+Zcent_1 = 13
+Zvert_1 = 1
+
+n_type_ca = 1
+num_ca_1  = 1
+ca_chrg_1 = -1
+Zcat_1    = 11
+Rcat_1    = 0.97
+

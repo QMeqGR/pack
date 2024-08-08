@@ -1,0 +1,149 @@
+#########################################
+#
+#   makefile for pack
+#
+#   Eric Majzoub
+#   Sandia National Laboratories
+#
+#########################################
+
+# Optimization problems:
+#
+# INTEL COMPILER OPTIMIZATION PROBELEMS:
+# icc with vectorization sometimes introduces errors in:
+#    rotate_anion.c        /* on expedition cluster only ?? */
+#    cent_of_mass.c        /* when using spherical anions only ?? */
+#
+# Just do: 'icc -c rotate_anion.c' followed by 'make icc=someflag' again
+#
+
+CC=/act/opt/openmpi-1.4.2/bin/mpicc -DMPI
+#CC=mpicc -DMPI
+CFLAGS= -Wall
+LDFLAGS= -lm
+PROFLAGS=${LDFLAGS} -Wall
+OPT_FLAGS= -O3 -pipe -fomit-frame-pointer -ffast-math -mfpmath=sse -m64
+#OPT_FLAGS= -O3 -ipo -no-prec-div -mcpu=core2 -xS -fomit-frame-pointer -static 
+
+ifeq (${USER},fzhou)
+	CC=/act/opt/openmpi-1.4.2/bin/mpicc -DMPI
+	OPT_FLAGS= -O3 -ipo -no-prec-div -mcpu=pentium4 -mtune=pentium4 -fomit-frame-pointer
+endif
+
+ifeq (${gcc},core2)
+	OPT_FLAGS= -O4 -pipe -fomit-frame-pointer -ffast-math -msse2 -ftree-vectorize -ftree-vectorizer-verbose=1 -march=x86-64
+	LDFLAGS= -lm -lc
+endif
+
+ifeq (${icc},core2)
+	CC=icc
+	OPT_FLAGS=-O3 -ipo -no-prec-div -mtune=core2 -axT -msse3 -fomit-frame-pointer
+	LDFLAGS= -limf /lib64/libm-2.10.1.so
+endif
+
+ifeq (${icc},core2unopt)
+	CC=icc
+	OPT_FLAGS= -O0
+	LDFLAGS= -limf /lib64/libm-2.10.1.so
+endif
+
+ifeq (${icc},dbg)
+	CC=icc
+	OPT_FLAGS= -debug all
+	LDFLAGS= -limf /lib64/libm-2.10.1.so
+endif
+
+ifeq (${icc},P4)
+	CC=icc
+	OPT_FLAGS=-O3 -ipo -no-prec-div -mtune=pentium4 -aW -fomit-frame-pointer -static
+	LDFLAGS= -limf -static
+endif
+
+ifeq (${icc},VO)
+	CC=icc
+	OPT_FLAGS=-O3 -ipo -no-prec-div -mtune=pentium4 -xS -fomit-frame-pointer
+	LDFLAGS= -limf -static
+endif
+
+ifeq (${sys},mac)
+	OPT_FLAGS= -O3 -pipe -fomit-frame-pointer -mfpmath=sse -m64
+	LDFLAGS= -m64 -lm -lc
+endif
+
+ifeq (${opt},dbg)
+	OPT_FLAGS= -g
+	LDFLAGS= -lm -lc
+endif
+
+ifeq (${opt},prof)
+	OPT_FLAGS= -O3 -pipe -ffast-math -mfpmath=sse -m64 -pg
+	LDFLAGS= -lm -lc
+endif
+
+######################
+
+HDRS= packlib.h global_vars.h global_defs.h
+OBJS= packlib.o main.o amoeba_ehm.o amotry_ehm.o printing.o metropolis.o \
+	en_rep.o dsm.o simplex.o autoadjust_pCnt.o init_parms.o init_simplex.o \
+	simp_trans.o init_estat.o init_energ.o compare.o tot_energy.o \
+	hard_dist.o init_cell.o matrix.o make_obj.o np_force_mv.o \
+	rescale_object.o lat_pathological.o translate.o rotate_object.o dist_fcns.o \
+	cell_basis.o ewald_sums.o chk_bounds.o rezone.o pack_frac.o \
+	pressure.o autoadjust_rejpct.o force_npbc.o cent_of_mass.o \
+	wang_landau.o center_np.o lnfmod.o wall_check.o conversions.o min-map.o
+
+
+EWALD_OBJS= matrix.o packlib.o ewald_sums.o cell_basis.o rezone.o
+RESCALE_OBJS= matrix.o rescale_object.o packlib.o cell_basis.o rezone.o
+
+##########################################
+##########################################
+
+all: pack_exe ewald_exe
+
+install: ~/bin/pack ~/bin/ewald
+
+debug: ${OBJS} ${HDRS}
+	${CC} -g -o pack_dbg ${OBJS} ${CFLAGS} ${OPT_FLAGS} ${LDFLAGS}
+
+profile: ${OBJS}
+	${CC} -g -pg -o pack_dbg ${OBJS} ${PROFLAGS} ${CFLAGS} ${OPT_FLAGS} ${LDFLAGS}
+	cp pack_dbg ~/bin/pack
+
+~/bin/pack: pack_exe
+	cp pack_exe ~/bin/pack
+
+pack_exe: ${OBJS} ${HDRS}
+	${CC} -o pack_exe  ${OBJS} ${CFLAGS} ${OPT_FLAGS} ${LDFLAGS}
+
+~/bin/ewald: ewald_exe
+	cp ewald_exe ~/bin/ewald
+
+ewald_exe: ewald.o ${EWALD_OBJS} ${HDRS}
+	${CC} -o ewald_exe ewald.c ${EWALD_OBJS} ${OPT_FLAGS} ${FLAGS} ${LDFLAGS}
+
+~/bin/rescale: rescale_exe
+	cp rescale_exe ~/bin/rescale
+
+#rescale_exe: rescale.c ${RESCALE_OBJS} ${HDRS}
+#	${CC} -o rescale_exe rescale.c ${RESCALE_OBJS} ${FLAGS} ${LDFLAGS}
+
+
+##########################################
+##########################################
+
+.SUFFIXES : .o .c
+.c.o:
+	${CC} ${CFLAGS} ${OPT_FLAGS} -c $<
+
+.PHONY: clean
+clean:
+	rm -f *~ pack_exe pack_dbg *.o ewald_exe rescale_exe
+	rm -f testsuite/*.bs testsuite/*.mv testsuite/*~
+	rm -f scripts/*~
+
+package:
+	make clean
+	~/bin/pack_tar
+	mv ~/pack-*.tgz ~/src/archive/
+
